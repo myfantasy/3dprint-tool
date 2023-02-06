@@ -40,8 +40,8 @@ String URL = "/doodle";
 #define WRITE_CNT 32
 #define WRITE_START RESPONCE_LENGTH-WRITE_CNT
 #define WORK_STEPPERS_START 4
-int index_i = 0;
-int steppers[WORK_STEPPERS_CNT] = {0, 0, 0, 0, 0};
+long index_i = 0;
+long steppers[WORK_STEPPERS_CNT] = {0, 0, 0, 0, 0};
 
 int responce[RESPONCE_LENGTH] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -453,7 +453,7 @@ bool readPinsNotChanges() {
 }
 
 void doSteps() {
-  int dxi[WORK_STEPPERS_CNT];
+  long dxi[WORK_STEPPERS_CNT];
   bool tick[WORK_STEPPERS_CNT];
   for (int i = 0; i < WORK_STEPPERS_CNT; i++){
     if (responce[N_P] == 0 || responce[WORK_STEPPERS_START+i] == 0) {
@@ -463,16 +463,24 @@ void doSteps() {
     }
   }
 
-  int val = 0;
+  long val = 0;
 
   for (; index_i < responce[N_P];) {
     index_i++;
 
     if (_debug && index_i%10==0) {
       Serial.println("doSteps "+String(index_i));
+      Serial.print(responce[N_P]);
+      Serial.print(";");
+      Serial.print("||");
       for (int i = 0; i < WORK_STEPPERS_CNT; i++){
         Serial.print(steppers[i]);
-        Serial.print(";")
+        Serial.print("(");
+        Serial.print(dxi[i]);
+        Serial.print(";");
+        Serial.print(responce[WORK_STEPPERS_START+i]);
+        Serial.print(")");
+        Serial.print(";");
       }
       Serial.println();      
     }
@@ -486,6 +494,22 @@ void doSteps() {
     for (int i = 0; i < WORK_STEPPERS_CNT; i++){
       val = (index_i + dxi[i])*(responce[WORK_STEPPERS_START+i])/responce[N_P];
       if (val!=steppers[i]) {
+        if (val >0 && steppers[i] <0) {
+            Serial.print(">>");
+            Serial.print(i);
+            Serial.print(";");
+            Serial.print(val);
+            Serial.print(";");
+            Serial.print(steppers[i]);
+            Serial.print("|");
+            Serial.print((index_i + dxi[i])*(responce[WORK_STEPPERS_START+i])/responce[N_P]);
+            Serial.print("|");
+            Serial.print((index_i + dxi[i])*(responce[WORK_STEPPERS_START+i]));
+            Serial.print(";");
+            Serial.print(responce[N_P]);
+            Serial.print(";");
+            Serial.println(); 
+        }
         steppers[i] = val;
         tick[i] = true;
       } else {
