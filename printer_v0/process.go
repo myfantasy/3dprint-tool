@@ -110,7 +110,7 @@ func parseBool(s string) (val bool, err error) {
 		return false, nil
 	}
 
-	return false, fmt.Errorf("допустимы значения 0 или 1, значение $v", s)
+	return false, fmt.Errorf("допустимы значения 0 или 1, значение %v", s)
 }
 
 type Response struct {

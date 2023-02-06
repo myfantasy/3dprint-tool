@@ -113,7 +113,7 @@ func (hs *handlerStruct) ServeHTTP(resp http.ResponseWriter, req *http.Request) 
 
 func returnPrinterAnswer(resp http.ResponseWriter, a *printer_v0.Response) {
 	_, err := resp.Write([]byte(a.ToStringSep("\n")))
-	log.Debug("rq: ", a.ToStringSep(","))
+	log.Debug("rs: ", a.ToStringSep(","))
 	if err != nil {
 		log.Error(err)
 	}
